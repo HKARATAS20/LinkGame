@@ -12,8 +12,7 @@ public class LinkableGrid : GridSystem<Chip>
     private bool initialPopulation = true;
     private Vector3 offScreenOffset;
     private PoolManager pool;
-
-
+    public GameObject gridBackgroundTile;
 
 
     public void SetValues(int maxMoves)
@@ -50,6 +49,7 @@ public class LinkableGrid : GridSystem<Chip>
                 if (IsEmpty(x, y))
                 {
                     newBlocks.Add(PutChipOnGrid(x, y, order));
+                    Instantiate(gridBackgroundTile, new Vector3(transform.position.x + x, transform.position.y + y), Quaternion.identity, transform);
                 }
             }
             order++;
@@ -75,14 +75,74 @@ public class LinkableGrid : GridSystem<Chip>
 
     private Chip PutChipOnGrid(int x, int y, int order)
     {
-        Debug.Log("Putting chip on grid at: " + x + ", " + y);
         Chip newChip = pool.GetRandomGridBlock();
         newChip.gameObject.SetActive(true);
         newChip.transform.position = transform.position + new Vector3(x, order) + offScreenOffset;
         newChip.transform.SetParent(transform, true);
         newChip.Position = new Vector2Int(x, y);
         PutItemAt(newChip, x, y);
+
         return newChip;
+    }
+
+    public IEnumerator CollapseAndFillGrid()
+    {
+        CollapseGrid();
+        yield return StartCoroutine(PopulateGrid());
+    }
+
+    private void CollapseGrid()
+    {
+        for (int x = 0; x < Dimensions.x; ++x)
+        {
+            for (int yEmpty = 0; yEmpty < Dimensions.y - 1; ++yEmpty)
+            {
+                if (IsEmpty(x, yEmpty))
+                {
+                    for (int yNotEmpty = yEmpty + 1; yNotEmpty < Dimensions.y; ++yNotEmpty)
+                    {
+                        var item = GetItemAt(x, yNotEmpty);
+
+                        if (item != null)
+                        {
+
+                            if (item.Idle)
+                            {
+                                MoveChipToPosition(item, x, yEmpty);
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Moves the given blastable to the given x and y coordinates on the grid.
+    /// Should only be called if (x,y) on the grid is empty
+    /// </summary>
+    /// <param name="toMove">Blastable to be moved</param>
+    /// <param name="x">X coordinate of the desired point</param>
+    /// <param name="y">Y coordinate of the desired point</param>
+    private void MoveChipToPosition(Chip toMove, int x, int y)
+    {
+        if (!BoundsCheck(toMove.Position.x, toMove.Position.y))
+            Debug.LogError("(" + toMove.Position.x + ", " + toMove.Position.y + ") is not on the grid.");
+
+        if (!BoundsCheck(x, y))
+            Debug.LogError("(" + x + ", " + y + ") is not on the grid.");
+
+        if (!IsEmpty(x, y))
+            return;
+
+        Chip temp = RemoveItemAt(toMove.Position.x, toMove.Position.y);
+        PutItemAt(temp, x, y);
+
+        toMove.Position = new Vector2Int(x, y);
+
+        StartCoroutine(toMove.MoveToPosition(transform.position + new Vector3(x, y)));
     }
 
 

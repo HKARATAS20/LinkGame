@@ -15,6 +15,9 @@ public class Chip : Movable
     //[SerializeField] protected ParticleSystem particles;
 
     private LinkableGrid grid;
+    private InputManager cursor;
+
+    private PoolManager pool;
     public ChipColor color;
 
 
@@ -23,6 +26,8 @@ public class Chip : Movable
         spriteRenderer = GetComponent<SpriteRenderer>();
         //SetupParticles();
         grid = (LinkableGrid)LinkableGrid.Instance;
+        cursor = InputManager.Instance;
+        pool = PoolManager.Instance;
     }
     public void SetSprite(Sprite sprite)
     {
@@ -43,10 +48,29 @@ public class Chip : Movable
         {
             //PlayParticleEffects();
         }
-
-        Destroy(gameObject);
+        Chip thisChip = grid.RemoveItemAt(this.Position);
+        pool.ReturnBlock(thisChip);
 
     }
+
+    private void OnMouseDown()
+    {
+        cursor.SelectFirst(this);
+    }
+
+    //  when the player releases the click, select nothing
+    private void OnMouseUp()
+    {
+        cursor.Reset();
+    }
+
+    //  when the player drags the mouse, select this as the second selected
+    //  (if using a mouse, this is actually called on every entry, even if they're not dragging, but cursor will filter this behaviour out)
+    private void OnMouseEnter()
+    {
+        cursor.SelectSecond(this);
+    }
+
 
 
 }
