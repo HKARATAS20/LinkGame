@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7442083037788931551}
   - component: {fileID: 7319099680962449867}
   - component: {fileID: 8382839503781484341}
-  - component: {fileID: 2501812516846700942}
+  - component: {fileID: 8248501752223416993}
   m_Layer: 0
   m_Name: BluePrefab
   m_TagString: Untagged
@@ -99,8 +99,8 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &2501812516846700942
-BoxCollider2D:
+--- !u!58 &8248501752223416993
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -132,15 +132,5 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.34133333, y: 0.34133333}
-    newSize: {x: 2.56, y: 2.56}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.34133333, y: 0.34133333}
-  m_EdgeRadius: 0
+  m_Radius: 0.5

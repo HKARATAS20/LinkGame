@@ -49,7 +49,7 @@ public class LinkableGrid : GridSystem<Chip>
                 if (IsEmpty(x, y))
                 {
                     newBlocks.Add(PutChipOnGrid(x, y, order));
-                    Instantiate(gridBackgroundTile, new Vector3(transform.position.x + x, transform.position.y + y), Quaternion.identity, transform);
+                    PutBackgroundTile(x, y);
                 }
             }
             order++;
@@ -83,6 +83,21 @@ public class LinkableGrid : GridSystem<Chip>
         PutItemAt(newChip, x, y);
 
         return newChip;
+    }
+
+    private void PutBackgroundTile(int x, int y)
+    {
+        Transform childTransform = transform.Find("Background");
+        if (childTransform != null)
+        {
+            Vector3 basePosition = transform.position;
+            GameObject backgroundTile = Instantiate(gridBackgroundTile, basePosition + new Vector3(x, y), Quaternion.identity, childTransform);
+            backgroundTile.name = "BackgroundTile_" + x + "_" + y;
+        }
+        else
+        {
+            Debug.LogError("Child object not found!");
+        }
     }
 
     public IEnumerator CollapseAndFillGrid()

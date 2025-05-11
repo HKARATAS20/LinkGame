@@ -20,7 +20,7 @@ public class ScoreManager : Singleton<ScoreManager>
         for (int i = 0; i < toResolve.Count; i++)
         {
             Chip block = toResolve[i];
-            block.GetComponent<BoxCollider2D>().enabled = false;
+            block.GetComponent<CircleCollider2D>().enabled = false;
 
             if (i == toResolve.Count - 1)
             {
