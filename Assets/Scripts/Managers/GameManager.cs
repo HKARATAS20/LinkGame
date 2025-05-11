@@ -7,7 +7,7 @@ public class GameManager : Singleton<GameManager>
 
     private LinkableGrid grid;
     private PoolManager pool;
-    Vector2Int dimensions = Vector2Int.one * 8;
+    Vector2Int dimensions = new(8, 8);
     private int moveCount = 20;
 
     void Start()

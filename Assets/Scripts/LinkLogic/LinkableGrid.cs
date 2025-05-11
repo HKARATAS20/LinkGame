@@ -13,6 +13,7 @@ public class LinkableGrid : GridSystem<Chip>
     private Vector3 offScreenOffset;
     private PoolManager pool;
     public GameObject gridBackgroundTile;
+    [SerializeField] private List<Chip> possibleMoves;
 
 
     public void SetValues(int maxMoves)
@@ -41,7 +42,7 @@ public class LinkableGrid : GridSystem<Chip>
         Vector3 onScreenPosition;
 
         int order = 0;
-        for (int y = 0; y < Dimensions.x; ++y)
+        for (int y = 0; y < Dimensions.y; ++y)
         {
             for (int x = 0; x < Dimensions.x; ++x)
             {
@@ -70,6 +71,7 @@ public class LinkableGrid : GridSystem<Chip>
                 yield return new WaitForSeconds(0.1f);
         }
         initialPopulation = false;
+        CheckPossibleMoves();
 
     }
 
@@ -161,4 +163,206 @@ public class LinkableGrid : GridSystem<Chip>
     }
 
 
+    private Link GetBlastedArea(Chip startChip)
+    {
+        Link link = new();
+        HashSet<Vector2Int> visited = new();
+        Queue<Chip> toCheck = new();
+
+        toCheck.Enqueue(startChip);
+        visited.Add(startChip.Position);
+        link.AddChip(startChip);
+
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+        while (toCheck.Count > 0)
+        {
+            Chip current = toCheck.Dequeue();
+
+            foreach (Vector2Int direction in directions)
+            {
+                Vector2Int neighborPosition = current.Position + direction;
+
+                if (BoundsCheck(neighborPosition) && !IsEmpty(neighborPosition) && !visited.Contains(neighborPosition))
+                {
+                    Chip neighbor = GetItemAt(neighborPosition);
+
+                    if (neighbor.color == startChip.color && neighbor.Idle)
+                    {
+                        toCheck.Enqueue(neighbor);
+                        visited.Add(neighborPosition);
+                        link.AddChip(neighbor);
+                    }
+                }
+            }
+        }
+
+        return link;
+    }
+
+
+    private bool ValidMoveExists()
+    {
+        possibleMoves = new List<Chip>();
+
+        for (int y = 0; y != Dimensions.y; ++y)
+            for (int x = 0; x != Dimensions.x; ++x)
+            {
+
+
+                if (BoundsCheck(x, y) && !IsEmpty(x, y))
+                {
+                    Link link = GetBlastedArea(GetItemAt(x, y));
+                    if (link.Count >= 3)
+                    {
+                        return true;
+                    }
+                }
+            }
+        return false;
+    }
+
+    public void CheckPossibleMoves()
+    {
+        if (!ValidMoveExists())
+        {
+            Debug.Log("No valid moves. Initiating shuffle sequence.");
+            StartCoroutine(ShuffleGrid());
+        }
+
+    }
+
+    private IEnumerator ShuffleGrid()
+    {
+        yield return new WaitForSeconds(0.2f);
+        while (!WholeGridIdle())
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        int attempts = 0;
+        const int maxAttempts = 20;
+
+
+        while (!ValidMoveExists())
+        {
+            attempts++;
+            if (attempts > maxAttempts)
+            {
+                Debug.LogError("Max shuffle attempts reached! Board might be unsolvable.");
+                //trigger game over here
+
+                yield break;
+            }
+            PerformOneLogicalShuffleIteration();
+            yield return null;
+        }
+        Debug.Log($"Valid grid found after {attempts} logical shuffles.");
+
+
+        Debug.Log("Animating grid to reflect new logical state.");
+        yield return StartCoroutine(AnimateGridToCurrentLogicalState());
+
+    }
+
+    private void LogicalSwap(Chip chip1, Chip chip2)
+    {
+        if (chip1 == null || chip2 == null || chip1 == chip2) return;
+
+        Vector2Int pos1 = chip1.Position;
+        Vector2Int pos2 = chip2.Position;
+
+
+        base.SwapItemsAt(pos1, pos2);
+
+
+        chip1.Position = pos2;
+        chip2.Position = pos1;
+    }
+
+    private void PerformOneLogicalShuffleIteration()
+    {
+
+
+        List<Vector2Int> firstHalfPositions = new();
+        List<Vector2Int> secondHalfPositions = new();
+
+
+        for (int y = 0; y < Dimensions.y; y++)
+        {
+            for (int x = 0; x < Dimensions.x; x++)
+            {
+                Vector2Int position = new(x, y);
+                if (y < Dimensions.y / 2)
+                {
+                    firstHalfPositions.Add(position);
+                }
+                else
+                {
+                    secondHalfPositions.Add(position);
+                }
+            }
+        }
+
+
+        secondHalfPositions = secondHalfPositions.OrderBy(pos => UnityEngine.Random.value).ToList();
+        int swapCount = Mathf.Min(firstHalfPositions.Count, secondHalfPositions.Count);
+        for (int i = 0; i < swapCount; i++)
+        {
+            Vector2Int firstHalfPos = firstHalfPositions[i];
+            Vector2Int secondHalfPos = secondHalfPositions[i];
+
+            Chip firstBlastable = GetItemAt(firstHalfPos.x, firstHalfPos.y);
+            Chip secondBlastable = GetItemAt(secondHalfPos.x, secondHalfPos.y);
+
+            if (firstBlastable != null && secondBlastable != null)
+            {
+                LogicalSwap(firstBlastable, secondBlastable);
+            }
+        }
+    }
+
+    private IEnumerator AnimateGridToCurrentLogicalState()
+    {
+        List<Coroutine> moveCoroutines = new();
+        for (int y = 0; y < Dimensions.y; y++)
+        {
+            for (int x = 0; x < Dimensions.x; x++)
+            {
+                Chip chip = GetItemAt(x, y);
+                if (chip != null)
+                {
+                    Vector3 targetWorldPosition = transform.position + new Vector3(x, y);
+                    moveCoroutines.Add(StartCoroutine(chip.MoveToPosition(targetWorldPosition, false)));
+
+
+                }
+            }
+        }
+        foreach (Coroutine coroutine in moveCoroutines)
+        {
+            yield return coroutine;
+        }
+    }
+
+
+    private bool WholeGridIdle()
+    {
+        for (int y = 0; y < Dimensions.y; y++)
+        {
+            for (int x = 0; x < Dimensions.x; x++)
+            {
+                if (!GetItemAt(x, y).Idle)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }
+
+
+
+
