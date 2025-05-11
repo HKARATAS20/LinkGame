@@ -1,22 +1,32 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ScoreManager : Singleton<ScoreManager>
 {
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI movesText;
     private LinkableGrid grid;
     private int score = 0;
+    private int goalScore;
+    private int moves;
     public int Score { get { return score; } }
+
+    public event System.Action OnGameOver;
+    public event System.Action OnLevelComplete;
+    public event System.Action LevelEndBanner;
     private void Start()
     {
         grid = (LinkableGrid)LinkableGrid.Instance;
     }
-    internal IEnumerator ResolveBlast(List<Chip> toResolve, int atMove)
+    internal IEnumerator ResolveLink(List<Chip> toResolve, int atMove)
     {
-        AddScore(toResolve.Count);
 
+        int addToScore = toResolve.Count;
         for (int i = 0; i < toResolve.Count; i++)
         {
             Chip block = toResolve[i];
@@ -34,13 +44,35 @@ public class ScoreManager : Singleton<ScoreManager>
         }
 
         StartCoroutine(grid.CollapseAndFillGrid());
-
+        AddScore(addToScore);
     }
 
     public void AddScore(int amount)
     {
         score += amount;
+        scoreText.text = score.ToString();
+        moves--;
+        movesText.text = moves.ToString();
+        if (moves <= 0)
+        {
+            if (score >= goalScore)
+            {
+                OnLevelComplete?.Invoke();
+            }
+            else
+            {
+                OnGameOver?.Invoke();
+            }
+        }
+        //trigger win and lose conditions here
 
     }
 
+    internal void SetMaxMovesAndGoalScore(int moveCount, int goalScore)
+    {
+        moves = moveCount;
+        movesText.text = moves.ToString();
+        this.goalScore = goalScore;
+
+    }
 }

@@ -141,4 +141,13 @@ public class Movable : MonoBehaviour
     {
         transform.DOShakePosition(duration, strength, vibrato, randomness);
     }
+
+    public void Grow()
+    {
+        transform.DOScale(1.2f, 0.2f).SetEase(Ease.OutBack);
+    }
+    public void Shrink()
+    {
+        transform.DOScale(1, 0.2f).SetEase(Ease.OutBack);
+    }
 }

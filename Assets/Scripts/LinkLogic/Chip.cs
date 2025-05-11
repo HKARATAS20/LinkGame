@@ -10,13 +10,14 @@ public enum ChipColor
 }
 public class Chip : Movable
 {
+    [Header("Game Settings")]
+    public GameSettings gameSettings;
     public Vector2Int Position { get; set; }
     protected SpriteRenderer spriteRenderer;
     //[SerializeField] protected ParticleSystem particles;
 
     private LinkableGrid grid;
     private InputManager cursor;
-
     private PoolManager pool;
     public ChipColor color;
 
@@ -32,6 +33,18 @@ public class Chip : Movable
     public void SetSprite(Sprite sprite)
     {
         spriteRenderer.sprite = sprite;
+    }
+
+    public void SetLinked()
+    {
+
+        spriteRenderer.color = new Color(0.75f, 0.75f, 0.75f, spriteRenderer.color.a); // Set to a neutral gray color
+        this.Grow();
+    }
+    public void ReleaseLinked()
+    {
+        spriteRenderer.color = new Color(1f, 1f, 1f, spriteRenderer.color.a);
+        this.Shrink();
     }
 
 
@@ -56,12 +69,14 @@ public class Chip : Movable
     private void OnMouseDown()
     {
         cursor.SelectFirst(this);
+        SetLinked();
     }
 
     //  when the player releases the click, select nothing
     private void OnMouseUp()
     {
         cursor.Reset();
+        ReleaseLinked();
     }
 
     //  when the player drags the mouse, select this as the second selected

@@ -8,7 +8,6 @@ using UnityEngine;
 public class LinkableGrid : GridSystem<Chip>
 {
 
-    private int moves;
     private bool initialPopulation = true;
     private Vector3 offScreenOffset;
     private PoolManager pool;
@@ -16,11 +15,11 @@ public class LinkableGrid : GridSystem<Chip>
     [SerializeField] private List<Chip> possibleMoves;
 
 
-    public void SetValues(int maxMoves)
+    public void SetValues()
     {
         pool = PoolManager.Instance;
         offScreenOffset = new Vector3(0, 16, 0);
-        moves = maxMoves;
+
         //movesText.text = "" + moves;
         //SetGridBackground();
     }
