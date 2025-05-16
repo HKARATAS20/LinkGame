@@ -68,8 +68,11 @@ public class Chip : Movable
 
     private void OnMouseDown()
     {
-        cursor.SelectFirst(this);
-        SetLinked();
+        if (gameSettings.isGameActive)
+        {
+            cursor.SelectFirst(this);
+            SetLinked();
+        }
     }
 
     //  when the player releases the click, select nothing

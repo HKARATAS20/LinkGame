@@ -15,3 +15,4 @@ MonoBehaviour:
   gridDimensions: {x: 8, y: 8}
   maxMoves: 25
   goalScore: 125
+  isGameActive: 1

@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e897e6f7bb1504f4d82a48094ab032ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameSettings: {fileID: 11400000, guid: 7671322c876164c06a94bc5cd6b5b2ee, type: 2}
   color: 0
 --- !u!212 &8382839503781484341
 SpriteRenderer:

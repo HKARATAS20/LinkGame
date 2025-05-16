@@ -46,8 +46,8 @@ public class MainMenuManager : MonoBehaviour
         maxMovesMinusButton.onClick.AddListener(() => ChangeMaxMoves(-1));
         maxMovesPlusButton.onClick.AddListener(() => ChangeMaxMoves(1));
 
-        goalScoreMinusButton.onClick.AddListener(() => ChangeGoalScore(-10));
-        goalScorePlusButton.onClick.AddListener(() => ChangeGoalScore(10));
+        goalScoreMinusButton.onClick.AddListener(() => ChangeGoalScore(-5));
+        goalScorePlusButton.onClick.AddListener(() => ChangeGoalScore(5));
 
         UpdateUI();
     }
