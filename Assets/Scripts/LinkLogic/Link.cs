@@ -74,6 +74,9 @@ public class Link
         int dy = Mathf.Abs(a.Position.y - b.Position.y);
 
         return (dx == 1 && dy == 0) || (dx == 0 && dy == 1);
+        //uncomment this line to allow diagonal linking
+        //also modification is needed when calculating valid moves to shuffle the grid
+        //return (dx == 1 && dy == 0) || (dx == 0 && dy == 1) || (dx == 1 && dy == 1);
     }
 
 

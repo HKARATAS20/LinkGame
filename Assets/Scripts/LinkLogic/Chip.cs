@@ -12,6 +12,9 @@ public class Chip : Movable
 {
     [Header("Game Settings")]
     public GameSettings gameSettings;
+    public ParticleSystem particles;
+
+    public Sprite particleSprite;
     public Vector2Int Position { get; set; }
     protected SpriteRenderer spriteRenderer;
     //[SerializeField] protected ParticleSystem particles;
@@ -26,7 +29,7 @@ public class Chip : Movable
     protected virtual void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        //SetupParticles();
+        SetupParticles();
         grid = (LinkableGrid)LinkableGrid.Instance;
         cursor = InputManager.Instance;
         pool = PoolManager.Instance;
@@ -62,7 +65,7 @@ public class Chip : Movable
         }
         else
         {
-            //PlayParticleEffects();
+            PlayParticleEffects();
         }
         Chip thisChip = grid.RemoveItemAt(this.Position);
         pool.ReturnBlock(thisChip);
@@ -91,21 +94,24 @@ public class Chip : Movable
 
 
 
-}
 
-/*
-    public virtual void SetupParticles()
+
+    public void SetupParticles()
     {
         if (particles != null)
         {
+
             particles = Instantiate(particles, transform);
             particles.gameObject.SetActive(false);
+            var textureSheetAnimation = particles.textureSheetAnimation;
+            textureSheetAnimation.RemoveSprite(0);
+            textureSheetAnimation.AddSprite(particleSprite);
         }
     }
-    */
 
-/*
-    public virtual void PlayParticleEffects()
+
+
+    public void PlayParticleEffects()
     {
 
         particles.transform.position = transform.position;
@@ -113,4 +119,4 @@ public class Chip : Movable
         particles.Play();
 
     }
-    */
+}

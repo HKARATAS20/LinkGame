@@ -47,7 +47,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameSettings: {fileID: 11400000, guid: 7671322c876164c06a94bc5cd6b5b2ee, type: 2}
+  particles: {fileID: 5956263522505653967, guid: 69e907577fa2a400db95237c87b070b7, type: 3}
+  particleSprite: {fileID: 21300000, guid: bc9fed503e38f43c6ba42e051f882f3b, type: 3}
   color: 2
+  isLinked: 0
 --- !u!212 &7586669571610632083
 SpriteRenderer:
   m_ObjectHideFlags: 0
