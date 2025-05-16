@@ -7,13 +7,11 @@ using UnityEngine.SceneManagement;
 public class GameManager : Singleton<GameManager>
 {
     [Header("Game Settings")]
-    public GameSettings gameSettings; // ScriptableObject reference
+    public GameSettings gameSettings;
     [SerializeField] GameObject levelClearedPanel;
     [SerializeField] GameObject levelFailedPanel;
-
-
+    [SerializeField] Movable levelEndBanner;
     public TextMeshProUGUI goalScoreText;
-
     private LinkableGrid grid;
     private PoolManager pool;
     Vector2Int dimensions;
@@ -38,6 +36,7 @@ public class GameManager : Singleton<GameManager>
         goalScoreText.text = goalScore.ToString();
         ScoreManager scoreManager = ScoreManager.Instance;
         scoreManager.SetMaxMovesAndGoalScore(moveCount, goalScore);
+
         scoreManager.OnGameOver += HandleGameOver;
         scoreManager.OnLevelComplete += HandleLevelComplete;
         scoreManager.LevelEndBanner += HandleShowBanner;
@@ -75,12 +74,6 @@ public class GameManager : Singleton<GameManager>
         Debug.Log("Game Over");
 
 
-
-        //Transform levelTransform = levelFailedPanel.transform.Find("PopupBase/PopupRibbon/LevelText");
-        // TMP_Text levelText = levelTransform.GetComponent<TMP_Text>();
-        // levelText.text = "Level " + ParameterData.Instance.currentLevel.level_number;
-
-
     }
 
     private void HandleLevelComplete()
@@ -91,21 +84,11 @@ public class GameManager : Singleton<GameManager>
         pool.gameObject.SetActive(false);
         Debug.Log("Level Complete");
 
-        //Transform starTransform = levelClearedPanel.transform.Find("PopupBase/Star");
-        //Transform levelTransform = levelClearedPanel.transform.Find("PopupBase/PopupRibbon/LevelText");
-
-        //Star starScript = starTransform.GetComponent<Star>();
-        //TMP_Text levelText = levelTransform.GetComponent<TMP_Text>();
-
-        //starScript.PlayParticles();
-        //levelText.text = "Level " + ParameterData.Instance.currentLevel.level_number;
-        //int nextLevel = ParameterData.Instance.currentLevel.level_number + 1;
-
     }
 
     private void HandleShowBanner()
     {
-        //MoveGameObject.MoveDownAndDisappear(levelEndBanner);
+        levelEndBanner.MoveDownAndDisappear();
     }
 
     public void ContinuteButton()

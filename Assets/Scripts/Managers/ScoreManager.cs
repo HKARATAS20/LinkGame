@@ -16,9 +16,9 @@ public class ScoreManager : Singleton<ScoreManager>
     private int moves;
     public int Score { get { return score; } }
 
-    public event System.Action OnGameOver;
-    public event System.Action OnLevelComplete;
-    public event System.Action LevelEndBanner;
+    public event Action OnGameOver;
+    public event Action OnLevelComplete;
+    public event Action LevelEndBanner;
     private void Start()
     {
         grid = (LinkableGrid)LinkableGrid.Instance;
@@ -44,10 +44,10 @@ public class ScoreManager : Singleton<ScoreManager>
         }
 
         StartCoroutine(grid.CollapseAndFillGrid());
-        AddScore(addToScore);
+        StartCoroutine(AddScore(addToScore));
     }
 
-    public void AddScore(int amount)
+    public IEnumerator AddScore(int amount)
     {
         score += amount;
         scoreText.text = score.ToString();
@@ -61,10 +61,11 @@ public class ScoreManager : Singleton<ScoreManager>
             }
             else
             {
+                LevelEndBanner?.Invoke();
+                yield return new WaitForSeconds(2f);
                 OnGameOver?.Invoke();
             }
         }
-        //trigger win and lose conditions here
 
     }
 

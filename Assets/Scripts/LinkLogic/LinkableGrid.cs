@@ -12,27 +12,13 @@ public class LinkableGrid : GridSystem<Chip>
     private Vector3 offScreenOffset;
     private PoolManager pool;
     public GameObject gridBackgroundTile;
-    [SerializeField] private List<Chip> possibleMoves;
-
 
     public void SetValues()
     {
         pool = PoolManager.Instance;
-        offScreenOffset = new Vector3(0, 16, 0);
+        offScreenOffset = new Vector3(0, 17, 0);
 
-        //movesText.text = "" + moves;
-        //SetGridBackground();
     }
-    /*
-        private void SetGridBackground()
-        {
-            GameObject gridBackground = transform.Find("grid_background").gameObject;
-            SpriteRenderer gridBackgroundRenderer = gridBackground.GetComponent<SpriteRenderer>();
-            gridBackgroundRenderer.size = new Vector2(Dimensions.x + 0.3f, Dimensions.y + 0.5f);
-            gridBackgroundRenderer.transform.position += new Vector3(-transform.position.x, -transform.position.y, 0);
-            gridBackground.SetActive(true);
-        }
-    */
 
     public IEnumerator PopulateGrid()
     {
@@ -40,7 +26,7 @@ public class LinkableGrid : GridSystem<Chip>
 
         Vector3 onScreenPosition;
 
-        int order = 0;
+
         for (int y = 0; y < Dimensions.y; ++y)
         {
             for (int x = 0; x < Dimensions.x; ++x)
@@ -48,11 +34,11 @@ public class LinkableGrid : GridSystem<Chip>
 
                 if (IsEmpty(x, y))
                 {
-                    newBlocks.Add(PutChipOnGrid(x, y, order));
+                    newBlocks.Add(PutChipOnGrid(x, y));
                     PutBackgroundTile(x, y);
                 }
             }
-            order++;
+
         }
         for (int i = 0; i != newBlocks.Count; i++)
         {
@@ -67,18 +53,18 @@ public class LinkableGrid : GridSystem<Chip>
                 StartCoroutine(newBlocks[i].MoveToPosition(onScreenPosition));
             }
             if (initialPopulation)
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.05f);
         }
         initialPopulation = false;
         CheckPossibleMoves();
 
     }
 
-    private Chip PutChipOnGrid(int x, int y, int order)
+    private Chip PutChipOnGrid(int x, int y)
     {
         Chip newChip = pool.GetRandomGridBlock();
         newChip.gameObject.SetActive(true);
-        newChip.transform.position = transform.position + new Vector3(x, order) + offScreenOffset;
+        newChip.transform.position = transform.position + new Vector3(x, y) + offScreenOffset;
         newChip.transform.SetParent(transform, true);
         newChip.Position = new Vector2Int(x, y);
         PutItemAt(newChip, x, y);
@@ -135,13 +121,6 @@ public class LinkableGrid : GridSystem<Chip>
         }
     }
 
-    /// <summary>
-    /// Moves the given blastable to the given x and y coordinates on the grid.
-    /// Should only be called if (x,y) on the grid is empty
-    /// </summary>
-    /// <param name="toMove">Blastable to be moved</param>
-    /// <param name="x">X coordinate of the desired point</param>
-    /// <param name="y">Y coordinate of the desired point</param>
     private void MoveChipToPosition(Chip toMove, int x, int y)
     {
         if (!BoundsCheck(toMove.Position.x, toMove.Position.y))
@@ -162,7 +141,7 @@ public class LinkableGrid : GridSystem<Chip>
     }
 
 
-    private Link GetBlastedArea(Chip startChip)
+    private Link GetLinkedArea(Chip startChip)
     {
         Link link = new();
         HashSet<Vector2Int> visited = new();
@@ -191,6 +170,10 @@ public class LinkableGrid : GridSystem<Chip>
                         toCheck.Enqueue(neighbor);
                         visited.Add(neighborPosition);
                         link.AddChip(neighbor);
+                        if (link.Count >= 3)
+                        {
+                            return link;
+                        }
                     }
                 }
             }
@@ -202,8 +185,6 @@ public class LinkableGrid : GridSystem<Chip>
 
     private bool ValidMoveExists()
     {
-        possibleMoves = new List<Chip>();
-
         for (int y = 0; y != Dimensions.y; ++y)
             for (int x = 0; x != Dimensions.x; ++x)
             {
@@ -211,7 +192,7 @@ public class LinkableGrid : GridSystem<Chip>
 
                 if (BoundsCheck(x, y) && !IsEmpty(x, y))
                 {
-                    Link link = GetBlastedArea(GetItemAt(x, y));
+                    Link link = GetLinkedArea(GetItemAt(x, y));
                     if (link.Count >= 3)
                     {
                         return true;
@@ -311,12 +292,12 @@ public class LinkableGrid : GridSystem<Chip>
             Vector2Int firstHalfPos = firstHalfPositions[i];
             Vector2Int secondHalfPos = secondHalfPositions[i];
 
-            Chip firstBlastable = GetItemAt(firstHalfPos.x, firstHalfPos.y);
-            Chip secondBlastable = GetItemAt(secondHalfPos.x, secondHalfPos.y);
+            Chip firstChip = GetItemAt(firstHalfPos.x, firstHalfPos.y);
+            Chip secondChip = GetItemAt(secondHalfPos.x, secondHalfPos.y);
 
-            if (firstBlastable != null && secondBlastable != null)
+            if (firstChip != null && secondChip != null)
             {
-                LogicalSwap(firstBlastable, secondBlastable);
+                LogicalSwap(firstChip, secondChip);
             }
         }
     }
@@ -343,8 +324,6 @@ public class LinkableGrid : GridSystem<Chip>
             yield return coroutine;
         }
     }
-
-
     private bool WholeGridIdle()
     {
         for (int y = 0; y < Dimensions.y; y++)

@@ -150,4 +150,25 @@ public class Movable : MonoBehaviour
     {
         transform.DOScale(1, 0.2f).SetEase(Ease.OutBack);
     }
+
+    public void MoveDownAndDisappear(float moveDuration = 0.5f, float pauseDuration = 0.5f)
+    {
+        GameObject target = gameObject;
+        if (target == null) return;
+
+        Vector3 startPosition = target.transform.position;
+        Vector3 middleScreenPosition = new(startPosition.x, 0, startPosition.z);
+        Vector3 offScreenPosition = new(startPosition.x, -4000, startPosition.z);
+
+        target.transform.DOMove(middleScreenPosition, moveDuration)
+            .SetEase(Ease.OutBack)
+            .OnComplete(() =>
+            {
+                target.transform.DOLocalMove(middleScreenPosition, pauseDuration).OnComplete(() =>
+                {
+                    target.transform.DOLocalMove(offScreenPosition, moveDuration)
+                        .SetEase(Ease.InBack);
+                });
+            });
+    }
 }

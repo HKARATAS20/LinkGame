@@ -34,7 +34,6 @@ public class MainMenuManager : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 60;
-        // Button events
         startGameButton.onClick.AddListener(StartGame);
 
         gridWidthMinusButton.onClick.AddListener(() => ChangeGridWidth(-1));
@@ -70,13 +69,13 @@ public class MainMenuManager : MonoBehaviour
 
     void ChangeGridWidth(int delta)
     {
-        gameSettings.gridDimensions.x = Mathf.Max(1, gameSettings.gridDimensions.x + delta);
+        gameSettings.gridDimensions.x = Mathf.Min(9, Mathf.Max(3, gameSettings.gridDimensions.x + delta));
         UpdateUI();
     }
 
     void ChangeGridHeight(int delta)
     {
-        gameSettings.gridDimensions.y = Mathf.Max(1, gameSettings.gridDimensions.y + delta);
+        gameSettings.gridDimensions.y = Mathf.Min(9, Mathf.Max(3, gameSettings.gridDimensions.y + delta));
         UpdateUI();
     }
 

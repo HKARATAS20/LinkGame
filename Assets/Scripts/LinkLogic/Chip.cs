@@ -20,6 +20,7 @@ public class Chip : Movable
     private InputManager cursor;
     private PoolManager pool;
     public ChipColor color;
+    public bool isLinked = false;
 
 
     protected virtual void Awake()
@@ -38,13 +39,15 @@ public class Chip : Movable
     public void SetLinked()
     {
 
-        spriteRenderer.color = new Color(0.75f, 0.75f, 0.75f, spriteRenderer.color.a); // Set to a neutral gray color
+        spriteRenderer.color = new Color(0.75f, 0.75f, 0.75f, spriteRenderer.color.a);
         this.Grow();
+        isLinked = true;
     }
     public void ReleaseLinked()
     {
         spriteRenderer.color = new Color(1f, 1f, 1f, spriteRenderer.color.a);
         this.Shrink();
+        isLinked = false;
     }
 
 
@@ -75,15 +78,12 @@ public class Chip : Movable
         }
     }
 
-    //  when the player releases the click, select nothing
     private void OnMouseUp()
     {
         cursor.Reset();
         ReleaseLinked();
     }
 
-    //  when the player drags the mouse, select this as the second selected
-    //  (if using a mouse, this is actually called on every entry, even if they're not dragging, but cursor will filter this behaviour out)
     private void OnMouseEnter()
     {
         cursor.SelectSecond(this);

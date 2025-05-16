@@ -46,19 +46,6 @@ public class PoolManager : Singleton<PoolManager>
         }
 
     }
-
-    public Chip GetGridBlock(ChipColor chipColor)
-    {
-        return chipColor switch
-        {
-            ChipColor.red => redPool.GetPooledObject(),
-            ChipColor.green => greenPool.GetPooledObject(),
-            ChipColor.blue => bluePool.GetPooledObject(),
-            ChipColor.yellow => yellowPool.GetPooledObject(),
-            _ => null,
-        };
-    }
-
     public Chip GetRandomGridBlock()
     {
         int randomIndex = UnityEngine.Random.Range(0, 4);
