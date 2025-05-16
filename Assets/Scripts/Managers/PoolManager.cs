@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,7 +51,8 @@ public class PoolManager : Singleton<PoolManager>
     }
     public Chip GetRandomGridBlock()
     {
-        int randomIndex = UnityEngine.Random.Range(0, 4);
+        int chipCount = Enum.GetValues(typeof(ChipColor)).Length;
+        int randomIndex = UnityEngine.Random.Range(0, chipCount);
 
         return randomIndex switch
         {

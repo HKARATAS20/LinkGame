@@ -14,11 +14,11 @@ public class LinkableGrid : GridSystem<Chip>
     private PoolManager pool;
     public GameObject gridBackgroundTile;
 
-    public void SetValues()
+    public void InitializeGridValues(Vector2Int dimensions)
     {
+        base.InitializeGrid(dimensions);
         pool = PoolManager.Instance;
         offScreenOffset = new Vector3(0, 17, 0);
-
     }
 
     public IEnumerator PopulateGrid()
@@ -43,7 +43,7 @@ public class LinkableGrid : GridSystem<Chip>
         }
         for (int i = 0; i != newBlocks.Count; i++)
         {
-            onScreenPosition = transform.position + new Vector3(newBlocks[i].Position.x, newBlocks[i].Position.y);
+            onScreenPosition = GridToWorldPosition(newBlocks[i].Position);
 
             if (i == newBlocks.Count - 1)
             {
@@ -65,7 +65,7 @@ public class LinkableGrid : GridSystem<Chip>
     {
         Chip newChip = pool.GetRandomGridBlock();
         newChip.gameObject.SetActive(true);
-        newChip.transform.position = transform.position + new Vector3(x, y) + offScreenOffset;
+        newChip.transform.position = GridToWorldPosition(x, y, offScreenOffset);
         newChip.transform.SetParent(transform, true);
         newChip.Position = new Vector2Int(x, y);
         PutItemAt(newChip, x, y);
@@ -78,8 +78,12 @@ public class LinkableGrid : GridSystem<Chip>
         Transform childTransform = transform.Find("Background");
         if (childTransform != null)
         {
-            Vector3 basePosition = transform.position;
-            GameObject backgroundTile = Instantiate(gridBackgroundTile, basePosition + new Vector3(x, y), Quaternion.identity, childTransform);
+            GameObject backgroundTile = Instantiate(
+              gridBackgroundTile,
+              GridToWorldPosition(x, y),
+              Quaternion.identity,
+              childTransform
+          );
             backgroundTile.name = "BackgroundTile_" + x + "_" + y;
         }
         else
@@ -138,7 +142,7 @@ public class LinkableGrid : GridSystem<Chip>
 
         toMove.Position = new Vector2Int(x, y);
 
-        StartCoroutine(toMove.MoveToPosition(transform.position + new Vector3(x, y)));
+        StartCoroutine(toMove.MoveToPosition(GridToWorldPosition(x, y)));
     }
 
 
@@ -315,7 +319,7 @@ public class LinkableGrid : GridSystem<Chip>
                 Chip chip = GetItemAt(x, y);
                 if (chip != null)
                 {
-                    Vector3 targetWorldPosition = transform.position + new Vector3(x, y);
+                    Vector3 targetWorldPosition = GridToWorldPosition(x, y);
                     moveCoroutines.Add(StartCoroutine(chip.MoveToPosition(targetWorldPosition, false)));
 
 
@@ -341,6 +345,22 @@ public class LinkableGrid : GridSystem<Chip>
         }
         return true;
     }
+
+    public Vector3 GridToWorldPosition(int x, int y)
+    {
+        return transform.position + new Vector3(x, y);
+    }
+
+    public Vector3 GridToWorldPosition(int x, int y, Vector3 offset)
+    {
+        return transform.position + new Vector3(x, y) + offset;
+    }
+
+    public Vector3 GridToWorldPosition(Vector2Int pos)
+    {
+        return transform.position + new Vector3(pos.x, pos.y);
+    }
+
 
 }
 

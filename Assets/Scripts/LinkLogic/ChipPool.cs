@@ -17,8 +17,9 @@ public class ChipPool : ObjectPool<Chip>
     {
         chip.GetComponent<SpriteRenderer>().enabled = false;
         chip.GetComponent<CircleCollider2D>().enabled = false;
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(2f);
         chip.transform.SetParent(transform, true);
         StartCoroutine(base.ReturnObjectToPool(chip));
+        yield return null;
     }
 }

@@ -31,6 +31,12 @@ public class MainMenuManager : MonoBehaviour
     [Header("Game Settings")]
     public GameSettings gameSettings; // ScriptableObject reference
 
+    private const int MinGridSize = 3;
+    private const int MaxGridSize = 9;
+    private const int MinMoves = 1;
+    private const int MinGoalScore = 0;
+    private const int GoalScoreStep = 5;
+
     private void Start()
     {
         Application.targetFrameRate = 60;
@@ -45,8 +51,8 @@ public class MainMenuManager : MonoBehaviour
         maxMovesMinusButton.onClick.AddListener(() => ChangeMaxMoves(-1));
         maxMovesPlusButton.onClick.AddListener(() => ChangeMaxMoves(1));
 
-        goalScoreMinusButton.onClick.AddListener(() => ChangeGoalScore(-5));
-        goalScorePlusButton.onClick.AddListener(() => ChangeGoalScore(5));
+        goalScoreMinusButton.onClick.AddListener(() => ChangeGoalScore(-GoalScoreStep));
+        goalScorePlusButton.onClick.AddListener(() => ChangeGoalScore(GoalScoreStep));
 
         UpdateUI();
     }
@@ -69,25 +75,25 @@ public class MainMenuManager : MonoBehaviour
 
     void ChangeGridWidth(int delta)
     {
-        gameSettings.gridDimensions.x = Mathf.Min(9, Mathf.Max(3, gameSettings.gridDimensions.x + delta));
+        gameSettings.gridDimensions.x = Mathf.Min(MaxGridSize, Mathf.Max(MinGridSize, gameSettings.gridDimensions.x + delta));
         UpdateUI();
     }
 
     void ChangeGridHeight(int delta)
     {
-        gameSettings.gridDimensions.y = Mathf.Min(9, Mathf.Max(3, gameSettings.gridDimensions.y + delta));
+        gameSettings.gridDimensions.y = Mathf.Min(MaxGridSize, Mathf.Max(MinGridSize, gameSettings.gridDimensions.y + delta));
         UpdateUI();
     }
 
     void ChangeMaxMoves(int delta)
     {
-        gameSettings.maxMoves = Mathf.Max(1, gameSettings.maxMoves + delta);
+        gameSettings.maxMoves = Mathf.Max(MinMoves, gameSettings.maxMoves + delta);
         UpdateUI();
     }
 
     void ChangeGoalScore(int delta)
     {
-        gameSettings.goalScore = Mathf.Max(0, gameSettings.goalScore + delta);
+        gameSettings.goalScore = Mathf.Max(MinGoalScore, gameSettings.goalScore + delta);
         UpdateUI();
     }
 

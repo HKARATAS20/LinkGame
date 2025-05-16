@@ -49,9 +49,7 @@ public class GameManager : Singleton<GameManager>
 
         grid.gameObject.transform.position = new Vector2(-(dimensions.x - 1) / 2f, (-(dimensions.y - 1) / 2f) - 2);
 
-
-        grid.InitializeGrid(dimensions);
-        grid.SetValues();
+        grid.InitializeGridValues(dimensions);
 
     }
 
