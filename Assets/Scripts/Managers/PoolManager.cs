@@ -20,31 +20,33 @@ public class PoolManager : Singleton<PoolManager>
 
     }
 
-    public void ReturnBlock(Chip chip)
+    public void ReturnBlock(GridItem item)
     {
-
-        switch (chip.color)
+        if (item is Chip chip)
         {
-            case ChipColor.blue:
+            switch (chip.color)
+            {
+                case ChipColor.blue:
 
-                StartCoroutine(bluePool.ReturnObjectToPool(chip));
-                break;
-            case ChipColor.green:
+                    StartCoroutine(bluePool.ReturnObjectToPool(chip));
+                    break;
+                case ChipColor.green:
 
-                StartCoroutine(greenPool.ReturnObjectToPool(chip));
-                break;
-            case ChipColor.red:
+                    StartCoroutine(greenPool.ReturnObjectToPool(chip));
+                    break;
+                case ChipColor.red:
 
-                StartCoroutine(redPool.ReturnObjectToPool(chip));
-                break;
-            case ChipColor.yellow:
-                StartCoroutine(yellowPool.ReturnObjectToPool(chip));
-                break;
-            default:
-                Debug.LogWarning("Unknown Chip type");
-                break;
+                    StartCoroutine(redPool.ReturnObjectToPool(chip));
+                    break;
+                case ChipColor.yellow:
+                    StartCoroutine(yellowPool.ReturnObjectToPool(chip));
+                    break;
+                default:
+                    Debug.LogWarning("Unknown Chip type");
+                    break;
+            }
+
         }
-
     }
     public Chip GetRandomGridBlock()
     {

@@ -76,4 +76,9 @@ public class ScoreManager : Singleton<ScoreManager>
         this.goalScore = goalScore;
 
     }
+
+    internal void TriggerGameOver()
+    {
+        OnGameOver?.Invoke();
+    }
 }

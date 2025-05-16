@@ -33,6 +33,9 @@ public class Link
         chips.Add(toAdd);
     }
 
+    /// <summary>
+    /// this function is used when the player backtracks to remove the last chip
+    /// </summary>
     public void ReleaseLastChip()
     {
         if (chips.Count < 2) return;

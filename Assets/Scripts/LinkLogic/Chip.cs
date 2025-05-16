@@ -8,40 +8,23 @@ public enum ChipColor
     red,
     yellow
 }
-public class Chip : Movable
+
+public class Chip : GridItem
 {
     [Header("Game Settings")]
     public GameSettings gameSettings;
-    public ParticleSystem particles;
-
-    public Sprite particleSprite;
-    public Vector2Int Position { get; set; }
-    protected SpriteRenderer spriteRenderer;
-    //[SerializeField] protected ParticleSystem particles;
-
-    private LinkableGrid grid;
     private InputManager cursor;
-    private PoolManager pool;
     public ChipColor color;
     public bool isLinked = false;
 
-
-    protected virtual void Awake()
+    protected override void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        SetupParticles();
-        grid = (LinkableGrid)LinkableGrid.Instance;
+        base.Awake();
         cursor = InputManager.Instance;
-        pool = PoolManager.Instance;
-    }
-    public void SetSprite(Sprite sprite)
-    {
-        spriteRenderer.sprite = sprite;
     }
 
     public void SetLinked()
     {
-
         spriteRenderer.color = new Color(0.75f, 0.75f, 0.75f, spriteRenderer.color.a);
         this.Grow();
         isLinked = true;
@@ -53,24 +36,6 @@ public class Chip : Movable
         isLinked = false;
     }
 
-
-    public virtual IEnumerator Resolve(Transform collectionPoint, bool shouldAnimate = false)
-    {
-        if (shouldAnimate)
-        {
-            if (collectionPoint != transform)
-            {
-                yield return StartCoroutine(MoveToTransform(collectionPoint));
-            }
-        }
-        else
-        {
-            PlayParticleEffects();
-        }
-        Chip thisChip = grid.RemoveItemAt(this.Position);
-        pool.ReturnBlock(thisChip);
-
-    }
 
     private void OnMouseDown()
     {
@@ -90,33 +55,5 @@ public class Chip : Movable
     private void OnMouseEnter()
     {
         cursor.SelectSecond(this);
-    }
-
-
-
-
-
-    public void SetupParticles()
-    {
-        if (particles != null)
-        {
-
-            particles = Instantiate(particles, transform);
-            particles.gameObject.SetActive(false);
-            var textureSheetAnimation = particles.textureSheetAnimation;
-            textureSheetAnimation.RemoveSprite(0);
-            textureSheetAnimation.AddSprite(particleSprite);
-        }
-    }
-
-
-
-    public void PlayParticleEffects()
-    {
-
-        particles.transform.position = transform.position;
-        particles.gameObject.SetActive(true);
-        particles.Play();
-
     }
 }

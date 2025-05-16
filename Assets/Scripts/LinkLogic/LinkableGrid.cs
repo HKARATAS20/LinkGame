@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class LinkableGrid : GridSystem<Chip>
 {
@@ -152,6 +153,13 @@ public class LinkableGrid : GridSystem<Chip>
         link.AddChip(startChip);
 
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        //Comment this direction array and uncomment the one below to allow diagonal linking
+
+        //this doesnt allow diagonal links just finds them when checking for valid moves
+        // Uncomment line 82 of Link.cs to allow diagonal linking
+
+        // Vector2Int[] directions = {Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
+        // new Vector2Int(1, 1), new Vector2Int(-1, 1), new Vector2Int(1, -1), new Vector2Int(-1, -1)};
 
         while (toCheck.Count > 0)
         {
@@ -230,17 +238,12 @@ public class LinkableGrid : GridSystem<Chip>
             if (attempts > maxAttempts)
             {
                 Debug.LogError("Max shuffle attempts reached! Board might be unsolvable.");
-                //trigger game over here
-
+                ScoreManager.Instance.TriggerGameOver();
                 yield break;
             }
             PerformOneLogicalShuffleIteration();
             yield return null;
         }
-        Debug.Log($"Valid grid found after {attempts} logical shuffles.");
-
-
-        Debug.Log("Animating grid to reflect new logical state.");
         yield return StartCoroutine(AnimateGridToCurrentLogicalState());
 
     }
